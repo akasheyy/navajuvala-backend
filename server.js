@@ -23,15 +23,15 @@ app.use(express.json());
 app.use("/api", publicRoutes);
 app.use("/api/admin", adminRoutes);
 
-// ================= FRONTEND SERVE =================
+// // ================= FRONTEND SERVE =================
 
-// Path to frontend build
-app.use(express.static(path.join(__dirname, "frontend/dist")));
+// // Path to frontend build
+// app.use(express.static(path.join(__dirname, "frontend/dist")));
 
-// SPA fallback (IMPORTANT)
-app.get("*", (req, res) => {
-  res.sendFile(path.join(__dirname, "frontend/dist/index.html"));
-});
+// // SPA fallback (IMPORTANT)
+// app.get("*", (req, res) => {
+//   res.sendFile(path.join(__dirname, "frontend/dist/index.html"));
+// });
 
 // ================= SERVER =================
 const PORT = process.env.PORT || 5000;
