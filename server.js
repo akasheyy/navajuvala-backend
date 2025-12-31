@@ -1,41 +1,40 @@
 import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
+import path from "path";
 import connectDB from "./config/db.js";
+
 process.env.TZ = "Asia/Kolkata";
 
-// Routes
 import adminRoutes from "./routes/adminRoutes.js";
 import publicRoutes from "./routes/publicRoutes.js";
 
 dotenv.config();
-
-// Connect MongoDB Atlas
 connectDB();
 
 const app = express();
+const __dirname = path.resolve();
 
 // Middlewares
 app.use(cors());
 app.use(express.json());
 
-// Default test route
-app.get("/", (req, res) => {
-  res.send("Navajuvala Library API Running...");
-});
-
-// Public Routes (no auth needed)
+// API Routes
 app.use("/api", publicRoutes);
-
-// Admin Routes (protected)
 app.use("/api/admin", adminRoutes);
 
-// Global Error Handler (Optional but recommended)
-app.use((err, req, res, next) => {
-  console.error("Error:", err.message);
-  res.status(500).json({ message: err.message });
+// ================= FRONTEND SERVE =================
+
+// Path to frontend build
+app.use(express.static(path.join(__dirname, "frontend/dist")));
+
+// SPA fallback (IMPORTANT)
+app.get("*", (req, res) => {
+  res.sendFile(path.join(__dirname, "frontend/dist/index.html"));
 });
 
-// Server Start
+// ================= SERVER =================
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => console.log(`✔ Server running on ${PORT}`));
+app.listen(PORT, () =>
+  console.log(`✔ Server running on port ${PORT}`)
+);

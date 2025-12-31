@@ -43,6 +43,7 @@ export const createBorrowRecord = async (req, res) => {
 // Mark returned (by borrow record id)
 export const returnBorrowRecord = async (req, res) => {
   try {
+    // expect route: PUT /admin/borrow-records/:id/return
     const recordId = req.params.id;
     const record = await BorrowRecord.findById(recordId);
     if (!record) return res.status(404).json({ message: "Record not found" });
@@ -51,9 +52,12 @@ export const returnBorrowRecord = async (req, res) => {
     const book = await Book.findById(record.bookId);
     if (!book) return res.status(404).json({ message: "Book not found" });
 
+    // --- DO NOT modify borrowDate or returnDate here ---
+    // Only set returned flags/timestamp
     record.returned = true;
-    record.returnedAt = new Date();
+    record.returnedAt = new Date(); // server time
 
+    // update book counts
     book.available = (book.available ?? 0) + 1;
     book.borrowed = Math.max((book.borrowed ?? 1) - 1, 0);
 
@@ -66,6 +70,7 @@ export const returnBorrowRecord = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
 
 // Get all borrow records
 export const getAllBorrowRecords = async (req, res) => {
